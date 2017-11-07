@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>豆瓣电影主页</title>
+		<style type="text/css">
+			.wrap{
+				width: 420px;
+				height: 600px;
+				border: 1px solid red;
+				margin: 100px auto;
+				text-align: center;
+				overflow: auto;
+			}
+			.wrap::after{
+				content: "";
+				display: block;
+				clear: both;
+			}
+			.box{
+				width: 195px;
+				height: 250px;
+				margin-bottom: 10px;
+				float: left;
+				background-color: lightgray;
+			}
+			.box:nth-of-type(odd){
+				margin-right: 10px;
+
+			}
+			.content{
+				width: 400px;
+				height: 620px;
+				border: 1px solid red;
+				margin: 100px auto;
+				text-align: center;
+				padding: 20px;
+				box-sizing: border-box;
+				position: relative;
+			}
+			.top{
+				width: 100%;
+				height: 250px;
+				background-color: lightgrey;
+			}
+			.box2{
+				width: 180px;
+				height: 250px;
+				text-align: center;
+				float: right;
+				color:red;
+			}
+			.middle{
+				height: 50px;
+				background: lightcyan;
+				text-align: left;
+				line-height: 50px;
+				color: red;
+			}
+			.bottom{
+				margin-top: 10px;
+				height: 260px;
+				width: 360px;
+				overflow-x:scroll ;
+				background-color: lightcyan;
+			}
+			.bottom1{
+				height: 238px;
+				width: 1360px;
+			}
+			.bottom1::after{
+				content: "";
+				display: block;
+				clear: both;
+			}
+			.casts{
+				margin-right: 10px;
+			}
+			.casts:nth-last-of-type(1){
+				margin-right: 0px;
+
+			}
+			.hh{
+				font-size: 25px;
+				 font-weight: bold;
+				  font-family: helvetica;
+				  text-align:center;
+				  background: -webkit-linear-gradient(left, #4f185d , #fe5d4b,#4f185d);     /* 背景色渐变 */
+				  -webkit-background-clip: text;         /* 规定背景的划分区域 */
+				  -webkit-text-fill-color: transparent; 
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrap">		
+		</div>
+	</body>
+	<script type="text/javascript">
+		var wrap=document.getElementsByClassName("wrap")[0];
+		var body=document.getElementsByTagName("body")[0];
+		var request=new XMLHttpRequest();
+		request.open("get","hot.json",true);
+		request.send();
+		request.onreadystatechange=function(){
+			if(request.readyState==4 && request.status==200){
+				var obj=JSON.parse(request.responseText);
+				var p=document.createElement("p");
+				p.className="hh"
+				p.innerHTML=obj.title;
+				// p.style.color="red";
+				p.style.margin="0";
+				p.style.height="50px";
+				p.style.lineHeight="50px";
+				p.style.backgroundColor="rgba(230,220,240,0.8)"
+				wrap.appendChild(p);
+				console.log(obj);
+				// 根据电影的数量来确定元素的数量
+				for(var i=0;i<obj.count;i++){	
+					var divs=document.createElement("div");
+					divs.className="box";
+					divs.style.position="relative";				
+					divs.style.backgroundImage='url('+obj.subjects[i].images.large+')';
+					divs.style.backgroundSize="195px 250px";
+					divs.style.backgroundRepeat="no-repeat";
+					wrap.appendChild(divs);
+					
+					// 创建标题
+					var ps=document.createElement("p");
+					ps.innerHTML=obj.subjects[i].title;
+					ps.style.height="60px";
+					ps.style.width="100%";
+					ps.style.lineHeight="60px";
+					ps.style.background="rgba(255,255,255,0.5)";
+					ps.style.position="absolute";
+					ps.style.bottom="-16px";
+					ps.style.color="green";
+					divs.appendChild(ps);
+					// 根据海报跳转到详情				
+				}
+			}
+			// 创建附页
+			var box=document.getElementsByClassName("box");
+			for(var i=0;i<box.length;i++){
+				box[i].index=i;
+				
+				box[i].onclick=function(){
+					var _this=this
+					wrap.style.display="none";
+					var detials=document.createElement("div");				
+					detials.className="content";
+					// 把附页分成三部分，上中下
+					// 对top进行设置
+					var top=document.createElement("div");
+					top.className="top";
+					top.style.backgroundImage='url('+obj.subjects[this.index].images.medium+')';
+					top.style.backgroundRepeat="no-repeat";
+					top.style.backgroundSize="contain";
+					var box2=document.createElement("div");
+					box2.className="box2";
+					top.appendChild(box2);
+					var p1=document.createElement("p");
+					p1.innerHTML=obj.subjects[this.index].title
+					var p2=document.createElement("p");
+					p2.innerHTML=obj.subjects[this.index].original_title
+					var p3=document.createElement("p");
+					p3.innerHTML="电影年份: "+obj.subjects[this.index].year
+					var p4=document.createElement("p");
+					p4.innerHTML="标签: "+obj.subjects[this.index].genres.join("/")
+					var p5=document.createElement("p");
+					p5.innerHTML=obj.subjects[this.index].collect_count+"人看过"
+					box2.appendChild(p1);
+					box2.appendChild(p2);
+					box2.appendChild(p3);
+					box2.appendChild(p4);
+					box2.appendChild(p5);
+					// 对中部进行设置
+					var middle=document.createElement("div");
+					middle.className="middle";
+					var span1=document.createElement("span");
+					span1.style.margin="0 10px";
+					span1.innerHTML="评分: "+obj.subjects[this.index].rating.average;
+					var span2=document.createElement("span");
+					span2.style.margin="0 10px";
+					span2.innerHTML="最高: "+obj.subjects[this.index].rating.max;
+					var span3=document.createElement("span");
+					span3.style.margin="0 10px";
+					span3.innerHTML="最低: "+obj.subjects[this.index].rating.min;
+					var span4=document.createElement("span");
+					span4.style.margin="0 10px";
+					span4.innerHTML="星级: "+obj.subjects[this.index].rating.stars;
+					middle.appendChild(span1);
+					middle.appendChild(span2);
+					middle.appendChild(span3);
+					middle.appendChild(span4);
+					// 对下部进行设置
+					var bottom=document.createElement("div");
+					var bottom1=document.createElement("div");
+					bottom.className="bottom"
+					bottom1.className="bottom1"
+					for(var i=0;i<obj.subjects[this.index].directors.length;i++){
+						var directors=document.createElement("div");
+						directors.style.backgroundImage='url('+obj.subjects[_this.index].directors[i].avatars.large+')';
+						directors.style.backgroundRepeat="no-repeat";
+						directors.style.backgroundSize="185px 244px";
+						directors.style.width="185px";
+						directors.style.height="244px";
+						directors.style.float="left";
+						directors.style.marginRight="10px";
+						directors.style.position="relative";
+						var directorsP=document.createElement("p");
+						directorsP.style.position="absolute";
+						directorsP.style.height="50px";
+						directorsP.style.width="185px";
+						directorsP.style.lineHeight="50px";
+						directorsP.style.bottom="-16px";
+						
+						directorsP.style.backgroundColor="rgba(255,255,255,0.8)";
+						directorsP.innerHTML="导演:"+"&nbsp;"+obj.subjects[_this.index].directors[i].name;
+						directors.appendChild(directorsP);
+						bottom1.appendChild(directors);
+					}
+					for(var i=0;i<obj.subjects[this.index].casts.length;i++){
+						var casts=document.createElement("div");
+						casts.className="casts";
+						casts.style.backgroundImage='url('+obj.subjects[_this.index].casts[i].avatars.large+')';
+						casts.style.backgroundRepeat="no-repeat";
+						casts.style.backgroundSize="185px 244px";
+						casts.style.width="185px";
+						casts.style.height="244px";
+						// casts.style.marginRight="10px";
+						casts.style.float="left";
+						casts.style.position="relative";
+						var castsP=document.createElement("p");
+						castsP.style.position="absolute";
+						castsP.style.height="50px";
+						castsP.style.width="185px";
+						castsP.style.lineHeight="50px";
+						castsP.style.bottom="-16px";
+						castsP.style.backgroundColor="rgba(255,255,255,0.8)";
+						castsP.innerHTML="主演:"+(i+1)+"&nbsp;"+obj.subjects[_this.index].casts[i].name;
+						casts.appendChild(castsP);
+						bottom1.appendChild(casts);					
+					}
+					bottom1.style.width=(obj.subjects[this.index].casts.length+obj.subjects[this.index].directors.length)*195-10+"px"
+					detials.appendChild(top);
+					detials.appendChild(middle);
+					detials.appendChild(bottom);
+					bottom.appendChild(bottom1);
+					var footer=document.createElement("p");
+					footer.style.height="30px";
+					footer.innerHTML="×";
+					footer.style.width="30px";
+					footer.style.color="red";
+					footer.style.position="absolute";
+					footer.style.left="195px";
+					footer.style.bottom="-25px";
+					footer.style.textAlign="center";
+					footer.style.lineHeight="30px";
+					footer.style.fontSize="25px";
+					footer.style.background="cyan";
+					footer.style.borderRadius="50%";
+					footer.style.cursor="pointer";
+					detials.appendChild(footer);
+					body.appendChild(detials);
+					footer.onclick=function(){
+						detials.style.display="none";
+						wrap.style.display="block";
+					}
+				}
+			}
+		}
+	</script>
+</html>
